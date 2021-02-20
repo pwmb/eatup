@@ -1,0 +1,10 @@
+.qty {
+  background: transparent;
+  border: none;
+  border-bottom: 0.1px dotted;
+  outline: none;
+  width: 85px;
+  background-color: antiquewhite;
+  padding: 0.4em;
+  font-size: 0.8rem;
+}

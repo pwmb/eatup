@@ -1,4 +1,5 @@
 require("dotenv").config()
+const path = require("path");
 const app = require("express")
 const axios = require("axios")
 const morgan = require('morgan')
@@ -16,6 +17,7 @@ function fetchDataFromFatSecret(url, data) {
 
 express.use(app.json())
 express.use(morgan('combined'))
+express.use('/', app.static(path.join(__dirname, 'frontend')))
 
 express.get("/search/:keyword", (req, res) => {
     const keyword = req.params.keyword
@@ -48,6 +50,7 @@ express.get("/food/:id", (req, res) => {
             }
             const filteredData = data.food.servings.serving.filter(v => v.serving_description === "100 g")
             if (filteredData && filteredData.length && filteredData.length > 0) {
+                filteredData[0]['food_name'] = data.food.food_name
                 return res.send(filteredData[0])
             }
             res.send(response.data)
@@ -60,4 +63,4 @@ express.get("/food/:id", (req, res) => {
 })
 
 const PORT = process.env.PORT || 3030
-express.listen(PORT)
+express.listen(PORT, () => console.log(`Server started on http://localhost:${PORT}`))

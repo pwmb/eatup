@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatDown</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script defer src="index.js"></script>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="section">
+            <div class="notification">
+                <div class="field has-addons">
+                    <div class="control has-icons-left is-expanded">
+                        <input class="input is-medium" type="search" placeholder="Search Food" v-model="keyword"
+                            v-on:search="search">
+                        <span class="icon is-medium is-left">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <div class="control">
+                        <a class="button is-link is-medium" v-on:click="search"
+                            v-bind:class="{'is-loading': searching}">
+                            Search
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <template v-if="results && results.length">
+                <div class="notification" v-for="data in results" v-on:click="fetchFoodDetails(data)"
+                    style="cursor: pointer;">
+                    <strong class="to-uppercase">{{data.food_name}}</strong>
+                    <br>
+                    <span class="is-size-6 is-size-7-mobile">{{data.food_description}}</span>
+                </div>
+            </template>
+            <template v-else>
+                <div class="notification">
+                    <nav class="level is-mobile">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading is-size-7-mobile">Net Carbs</p>
+                                <p class="title is-size-6-mobile">{{totalNetCarbs}} g</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading is-size-7-mobile">Fats</p>
+                                <p class="title is-size-6-mobile">{{totalFat}} g</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading is-size-7-mobile">Protein</p>
+                                <p class="title is-size-6-mobile">{{totalProtein}} g</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading is-size-7-mobile">Calories</p>
+                                <p class="title is-size-6-mobile">{{totalCalories}} kcal</p>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                <div style="max-height: 450px;overflow: auto;">
+                    <div class="notification" v-for="(food, index) in todayList">
+                        <button class="delete is-small" v-on:click="deleteFoodItemFromTodayList(index)"></button>
+                        <strong>{{food.food_name}} (per {{food.serving_description}})</strong>
+                        <br>
+                        <input class="qty" type="text" v-model="food.qty" placeholder="quantity in gms"
+                            v-on:change="updateQtyFor(food, index)">
+                        <div class="is-size-6 is-size-7-mobile">
+                            Calories: {{food.calories}}kcal | Fat: {{food.fat}}g | Carbs:
+                            {{food.carbohydrate}}g | Fiber: {{food.fiber}}g | Protein: {{food.protein}}g
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template v-if="currentFood">
+                <div class="modal is-active">
+                    <div class="modal-background" v-on:click="currentFood = null"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">{{currentFood.food_name}}</p>
+                            <button class="delete" aria-label="close" v-on:click="currentFood = null"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <h2>Nutrition facts <strong>(per {{currentFood.serving_description}})</strong></h2>
+                            <br>
+                            <div><strong>Carbohydrates</strong>&nbsp;&nbsp;<span>{{currentFood.carbohydrate}} g</span>
+                            </div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Net</strong>&nbsp;&nbsp;<span>{{parseFloat(currentFood.carbohydrate) - parseFloat(currentFood.fiber)}}
+                                    g</span>
+                            </div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Fiber</strong>&nbsp;&nbsp;<span>{{currentFood.fiber}}
+                                    g</span>
+                            </div>
+                            <br>
+                            <div><strong>Fat</strong>&nbsp;&nbsp;<span>{{currentFood.fat}} g</span></div>
+                            <div><strong>Protein</strong>&nbsp;&nbsp;<span>{{currentFood.protein}} g</span></div>
+                            <br>
+                            <div><strong>Calories</strong>&nbsp;&nbsp;<span>{{currentFood.calories}} kcal</span></div>
+
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button is-success" v-on:click="addToMyDailyList(100)">Add to today's
+                                diet</button>
+                            <button class="button" v-on:click="currentFood = null">Cancel</button>
+                        </footer>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+    </div>
+</body>
+
+</html>

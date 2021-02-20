@@ -10,6 +10,10 @@
     "morgan": "^1.10.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon node index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
   }
 }
